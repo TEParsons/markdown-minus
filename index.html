@@ -10,6 +10,16 @@ const md = window.markdownit({
   // highlight: function (/*str, lang*/) { return ''; }
 });
 
+window.onload = function() {
+  var url = window.location.href;
+  var theme = url.match(/(?<=theme\=)[^\&]*/g);
+  if (theme) {
+    document.getElementById("theme-ctrl").value = theme;
+    stylerender();
+  }
+  var file = url.match(/(?<=src\=)[^\&]*/g);  
+}
+
 function update() {
   let src = document.getElementById("raw");
   let target = document.getElementById("render");
