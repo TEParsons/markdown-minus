@@ -1,0 +1,190 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/11.0.0/markdown-it.min.js"></script>
+<script>
+  // Assuming a 'markdown-it' global
+const md = window.markdownit({
+  html: true,
+  xhtmlOut: true,
+  breaks: false,
+  linkify: false,
+  typographer: false
+  // highlight: function (/*str, lang*/) { return ''; }
+});
+
+function update() {
+  let src = document.getElementById("raw");
+  let target = document.getElementById("render");
+  let theme = document.getElementById("theme-ctrl");
+  // Render and style
+  target.contentWindow.document.head.innerHTML = `<link rel="stylesheet" href=${theme.value}>`;
+  target.contentWindow.document.body.innerHTML = md.render(src.value);
+}
+
+function styleraw() {
+  let src = document.getElementById("raw");
+  let ctrl = document.getElementById("rawspec");
+  src.style = ctrl.value;
+}
+
+function load() {
+  var loader = document.getElementById("load-button");
+  loader.click();
+}
+function loadfile() {
+  var loader = document.getElementById("load-button");
+  var reader = new FileReader();
+  reader.readAsText(loader.files[0]);
+  reader.addEventListener("loadend", function () {
+    document.getElementById("raw").value = reader.result;
+    document.getElementById("save-to").value = loader.value.replace("C:\\fakepath\\", "");
+    update()
+  });
+}
+
+function save() {
+  var saver = document.getElementById("save-button");
+  var type = document.getElementById("export-type").value;
+  var location = document.getElementById("save-to").value;
+  var content;
+  if (type == "md") {
+    content = document.getElementById("raw").value;
+  } else if (type == "html") {
+    let body = document.getElementById("render").contentWindow.document.body.innerHTML;
+    let head = document.getElementById("render").contentWindow.document.head.innerHTML;
+    content = `<head>${head}</head>\n\n\<body>${body}</body>`;
+  }
+  var contentBlob = new Blob([ content ], { type: 'text/plain' });
+  saver.download = location.replace(/\..*/g, `.${type}`)
+  saver.href = window.webkitURL.createObjectURL(contentBlob);
+  saver.click();
+}
+
+function savetype() {
+  var type = document.getElementById("export-type").value;
+  var loc = document.getElementById("save-to")
+  loc.value = loc.value.replace(/\..*/g, `.${type}`)
+}
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+html {
+  height: 100%;
+  display: flex;
+}
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+}
+nav {
+  position: relative;
+  width: 100%;
+  height: 3.5rem;
+  display: flex;
+  color: white;
+  background-color: black;
+}
+nav * {
+  position: relative;
+  border: none;
+  background-color: rgba(0,0,0,0);
+  font-size: 1rem;
+  padding: 1rem 1.5rem;
+  border-radius: 0;
+  margin: 0;
+  font-family: Montserrat;
+  font-weight: 600;
+  outline: none;
+  white-space: nowrap;
+  color: grey;
+}
+nav button:hover {
+  color: white;
+}
+nav #theme-ctrl {
+  width: 100%;
+  position: relative;
+  border: none;
+  font-weight: 500;
+  resize: none;
+  white-space: normal;
+  text-align: right;
+}
+nav #theme-ctrl:hover {
+  color: white;
+}
+nav #save-to {
+  font-weight: 500;
+  
+}
+nav select {
+  padding-left: 0;
+  margin-left: -1.25rem;
+  margin-right: 1.25rem;
+}
+
+write {
+  display: flex;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+#raw, #render {
+  width: 50%;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  margin: 0;
+  outline: none;
+  box-sizing: border-box;
+  scrollbar-width: 1rem;
+  resize: none;
+}
+
+#raw {
+  background-color: #f2f2f2;
+}
+#render {
+  padding: 10px;
+}
+#rawspec {
+  position: absolute;
+  outline: none;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 1rem;
+  font-size: 1rem;
+  left: 0; bottom: 0; right: 50%;
+  width: calc(50% - 1rem);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: grey;
+}
+#rawspec:focus {
+  background-color: white;
+  color: black;
+}
+
+</style>
+
+<nav>
+  <button onClick="load()">load</button>
+  <input id='load-button' type='file' onChange="loadfile()" hidden />
+  <input id="save-to" placeholder="file location..."></input>
+  <button onClick="save()">save</button>
+  <select value="md" id="export-type" onChange="savetype()">
+    <option value="md">markdown</option>
+    <option value="html">html</option>
+  </select>
+  <a href="" download="" id='save-button' hidden>test</a>
+  <textarea placeholder="link to css file..." id="theme-ctrl" oninput="update()"></textarea>
+</nav>
+<write>
+  <textarea id="raw" oninput="update()"></textarea>
+  <input id="rawspec" placeholder="style..." oninput="styleraw()"></input>
+  <iframe id="render"></iframe>
+</write>
