@@ -13,9 +13,6 @@ const md = window.markdownit({
 function update() {
   let src = document.getElementById("raw");
   let target = document.getElementById("render");
-  let theme = document.getElementById("theme-ctrl");
-  // Render and style
-  target.contentWindow.document.head.innerHTML = `<link rel="stylesheet" href=${theme.value}>`;
   target.contentWindow.document.body.innerHTML = md.render(src.value);
 }
 
@@ -23,6 +20,16 @@ function styleraw() {
   let src = document.getElementById("raw");
   let ctrl = document.getElementById("rawspec");
   src.style = ctrl.value;
+}
+
+function stylerender() {
+  var themeCtrl = document.getElementById("theme-ctrl");
+  var theme = themeCtrl.value
+  var target = document.getElementById("render");
+  if (theme in ["torillic", "whitelines", "blacklines"]) {
+    theme = `https://teparsons.github.io/markdown-minus/themes/${theme}.css`
+  }
+  target.contentWindow.document.head.innerHTML = `<link rel="stylesheet" href=${theme}>`;
 }
 
 function load() {
@@ -181,7 +188,7 @@ write {
     <option value="html">html</option>
   </select>
   <a href="" download="" id='save-button' hidden>test</a>
-  <textarea placeholder="link to css file..." id="theme-ctrl" oninput="update()"></textarea>
+  <textarea placeholder="link to css file..." id="theme-ctrl" oninput="stylerender()"></textarea>
 </nav>
 <write>
   <textarea id="raw" oninput="update()"></textarea>
