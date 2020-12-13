@@ -171,3 +171,7 @@ mark {
 ::spelling-error {
   color: var(--red);
 }
+
+img {
+  max-width: 100%;
+}
