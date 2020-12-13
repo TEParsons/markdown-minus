@@ -26,7 +26,7 @@ function stylerender() {
   var themeCtrl = document.getElementById("theme-ctrl");
   var theme = themeCtrl.value
   var target = document.getElementById("render");
-  if (theme in ["torillic", "whitelines", "blacklines"]) {
+  if (["torillic", "whitelines", "blacklines"].indexOf(theme) >= 0) {
     theme = `https://teparsons.github.io/markdown-minus/themes/${theme}.css`
   }
   target.contentWindow.document.head.innerHTML = `<link rel="stylesheet" href=${theme}>`;
